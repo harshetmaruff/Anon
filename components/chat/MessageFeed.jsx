@@ -20,7 +20,7 @@ export function MessageFeed({ messages, myUserName }) {
         </div>
       </div>
       {messages.map((m, i) => (
-        // v1: self = display-name match (shared names collide — accepted, see README)
+        // Author is the server-assigned internal name, so this is an exact match
         <MessageBubble key={`${m.ts}-${i}`} msg={m} mine={m.user === myUserName} />
       ))}
     </div>

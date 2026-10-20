@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSocket } from "@/hooks/useSocket";
+import { getSocket, getClientId } from "@/hooks/useSocket";
 import { useChatStore } from "@/store/useChatStore";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -28,7 +28,7 @@ export function JoinForm({ userName, setUserName }) {
     if (roomKey.length !== 16) return showToast("Room not found or expired", "error");
     setBusy(true);
     const socket = getSocket();
-    socket.emit("join_room", { roomKey, userName: name }, (res) => {
+    socket.emit("join_room", { roomKey, userName: name, clientId: getClientId() }, (res) => {
       setBusy(false);
       if (!res?.success) return showToast(res?.error || "Room not found or expired", "error");
       try {

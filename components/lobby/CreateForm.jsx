@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Info } from "lucide-react";
-import { getSocket } from "@/hooks/useSocket";
+import { getSocket, getClientId } from "@/hooks/useSocket";
 import { useChatStore } from "@/store/useChatStore";
 import { Button } from "@/components/ui/Button";
 
@@ -17,7 +17,7 @@ export function CreateForm({ userName }) {
     if (!name) return showToast("Please enter your name", "error");
     setBusy(true);
     const socket = getSocket();
-    socket.emit("create_room", { userName: name }, async (res) => {
+    socket.emit("create_room", { userName: name, clientId: getClientId() }, async (res) => {
       setBusy(false);
       if (!res?.roomKey) return showToast("Failed to create room", "error");
       const { roomKey } = res;

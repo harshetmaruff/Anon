@@ -2,7 +2,7 @@
 import { X } from "lucide-react";
 import { shortName } from "@/components/chat/chatUtils";
 
-export function UserSidebar({ users, myUserName, open, desktopVisible, onClose }) {
+export function UserSidebar({ users, myUserName, myInternal, open, desktopVisible, onClose }) {
   const list = (
     <div className="flex h-full flex-col">
       <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-800 px-4">
@@ -20,7 +20,9 @@ export function UserSidebar({ users, myUserName, open, desktopVisible, onClose }
       <div className="flex-1 space-y-2 overflow-y-auto p-4">
         {users.map((u) => {
           const display = shortName(u);
-          const isMe = display === myUserName || u === myUserName || u.startsWith(myUserName + "_");
+          // Exact match on the server-assigned internal name; fall back to the
+          // display name only when the internal name is not known yet.
+          const isMe = myInternal ? u === myInternal : display === myUserName;
           return (
             <div
               key={u}
@@ -33,7 +35,7 @@ export function UserSidebar({ users, myUserName, open, desktopVisible, onClose }
               <div className="flex min-w-0 items-center gap-2.5">
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-sky-400" />
                 <span className="truncate text-sm font-medium text-slate-100">
-                  {isMe ? `${u} (You)` : display}
+                  {isMe ? `${display} (You)` : display}
                 </span>
               </div>
               {isMe && (

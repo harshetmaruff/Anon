@@ -1,7 +1,7 @@
 "use client";
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getSocket, ensureRoomMembership } from "@/hooks/useSocket";
+import { getSocket, ensureRoomMembership, getClientId } from "@/hooks/useSocket";
 import { useChatStore } from "@/store/useChatStore";
 import { ChatHeader } from "@/components/chat/ChatHeader";
 import { MessageFeed } from "@/components/chat/MessageFeed";
@@ -20,6 +20,7 @@ export default function RoomPage() {
   const userName = useChatStore((s) => s.userName);
   const users = useChatStore((s) => s.users);
   const messages = useChatStore((s) => s.messages);
+  const myInternal = useChatStore((s) => s.myInternal);
 
   useEffect(() => {
     let name = "";
@@ -67,7 +68,7 @@ export default function RoomPage() {
     // tab silently stops receiving room events after a reconnect)
     const stopMembership = ensureRoomMembership(
       socket,
-      { roomKey: urlKey, userName: name },
+      { roomKey: urlKey, userName: name, clientId: getClientId() },
       (res) => {
         if (!res?.success) {
           useChatStore.getState().showToast(res?.error || "Room not found or expired", "error");
@@ -75,6 +76,7 @@ export default function RoomPage() {
           return;
         }
         useChatStore.getState().setUsers(res.currentUsers || []);
+        useChatStore.getState().setMyInternal(res.internalName || "");
         try {
           sessionStorage.setItem("anon_roomKey", urlKey);
         } catch {}
@@ -94,9 +96,9 @@ export default function RoomPage() {
 
   const send = useCallback(
     (text) => {
-      getSocket().emit("send_message", { roomKey: urlKey, userName, text, ts: Date.now() });
+      getSocket().emit("send_message", { roomKey: urlKey, userName: myInternal || userName, text, ts: Date.now() });
     },
-    [urlKey, userName]
+    [urlKey, userName, myInternal]
   );
 
   const copy = useCallback(async () => {
@@ -156,12 +158,13 @@ export default function RoomPage() {
       />
       <div className="relative flex w-full flex-1 overflow-hidden">
         <main className="flex h-full min-w-0 flex-1 flex-col bg-slate-950">
-          <MessageFeed messages={messages} myUserName={userName} />
+          <MessageFeed messages={messages} myUserName={myInternal || userName} />
           <ChatInput onSend={send} disabled={!ready} />
         </main>
         <UserSidebar
           users={users}
-          myUserName={userName}
+          myUserName={myInternal || userName}
+          myInternal={myInternal}
           open={drawer}
           desktopVisible={sidebarVisible}
           onClose={closeUsers}

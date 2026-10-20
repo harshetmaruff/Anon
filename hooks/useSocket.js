@@ -11,6 +11,26 @@ export function getSocket() {
   return socketInstance;
 }
 
+// Stable per-tab identity. The server uses it to build the internal name
+// (DisplayName_clientId) so the same person keeps one identity across
+// reconnects and remounts instead of collecting duplicate suffixed copies.
+let clientIdFallback = null;
+export function getClientId() {
+  try {
+    let id = sessionStorage.getItem("anon_clientId");
+    if (!id) {
+      id = Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 4);
+      sessionStorage.setItem("anon_clientId", id);
+    }
+    return id;
+  } catch {
+    if (!clientIdFallback) {
+      clientIdFallback = Math.random().toString(36).slice(2, 8) + Math.random().toString(36).slice(2, 4);
+    }
+    return clientIdFallback;
+  }
+}
+
 export function useSocket() {
   const ref = useRef(null);
   useEffect(() => {

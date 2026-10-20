@@ -6,14 +6,16 @@ export const useChatStore = create((set) => ({
   roomKey: "",
   users: [],
   messages: [],
+  myInternal: "", // server-assigned internal name (DisplayName_clientId)
   toast: null, // { message, type }
 
   setUser: (userName) => set({ userName }),
   setRoom: (roomKey) => set({ roomKey }),
   setUsers: (users) => set({ users }),
+  setMyInternal: (myInternal) => set({ myInternal }),
   addMessage: (msg) => set((s) => ({ messages: [...s.messages, msg] })),
   setMessages: (messages) => set({ messages }),
   showToast: (message, type = "info") => set({ toast: { message, type } }),
   clearToast: () => set({ toast: null }),
-  reset: () => set({ roomKey: "", users: [], messages: [] }),
+  reset: () => set({ roomKey: "", users: [], messages: [], myInternal: "" }),
 }));
