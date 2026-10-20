@@ -20,7 +20,7 @@ export function UserSidebar({ users, myUserName, open, desktopVisible, onClose }
       <div className="flex-1 space-y-2 overflow-y-auto p-4">
         {users.map((u) => {
           const display = shortName(u);
-          const isMe = display === myUserName;
+          const isMe = display === myUserName || u === myUserName || u.startsWith(myUserName + "_");
           return (
             <div
               key={u}
@@ -33,7 +33,7 @@ export function UserSidebar({ users, myUserName, open, desktopVisible, onClose }
               <div className="flex min-w-0 items-center gap-2.5">
                 <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-sky-400" />
                 <span className="truncate text-sm font-medium text-slate-100">
-                  {isMe ? `You (${display})` : display}
+                  {isMe ? `${u} (You)` : display}
                 </span>
               </div>
               {isMe && (
