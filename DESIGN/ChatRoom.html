@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Anon - Private Chat Room</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-family: 'Material Symbols Outlined';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 18px;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans h-screen w-screen overflow-hidden flex flex-col antialiased">
+<!-- Top Navigation Bar -->
+<header class="h-16 px-4 md:px-6 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0 z-30 shadow-sm">
+<!-- Brand & Room Status -->
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400"><span class="material-symbols-outlined text-[18px]">lock</span></div>
+<span class="font-semibold text-lg text-white tracking-tight">Anon</span>
+</div>
+<div class="h-5 w-px bg-slate-800 hidden sm:block"></div>
+<!-- Room Code Badge -->
+<div class="flex items-center gap-2 bg-slate-800/80 border border-slate-700/60 px-2.5 py-1 rounded-lg">
+<span class="text-xs text-slate-400">Room:</span>
+<span class="text-xs font-medium text-slate-200">#e9f8a...c32d</span>
+<button class="flex items-center gap-1 text-xs text-slate-400 hover:text-white bg-slate-700/50 hover:bg-slate-700 px-2 py-0.5 rounded transition-colors" id="copy-btn" onclick="copyCode()" title="Copy room link">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span class="">Copy Code</span>
+</button>
+</div>
+<!-- Participant counter pill -->
+<div class="hidden lg:flex items-center gap-1.5 text-xs text-slate-400 pl-1">
+<span class="w-2 h-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.6)]"></span>
+<span class="">3 people online</span>
+</div>
+</div>
+<!-- Header Actions -->
+<div class="flex items-center gap-2.5">
+<!-- Toggle Mobile Sidebar -->
+<button class="lg:hidden p-2 rounded-lg bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-colors" onclick="toggleSidebar()" title="View participants">
+<span class="material-symbols-outlined">group</span>
+</button>
+<!-- Leave Room Button -->
+<button class="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-rose-500/15 hover:text-rose-400 hover:border-rose-500/30 border border-slate-700 text-xs font-medium text-slate-300 transition-colors" onclick="leaveRoom()">
+<span class="material-symbols-outlined text-[16px]">logout</span>
+<span class="">Leave Room</span>
+</button>
+</div>
+</header>
+<!-- Workspace: Chat Feed & Sidebar -->
+<div class="flex-1 flex overflow-hidden w-full relative">
+<!-- Main Chat Feed Area -->
+<main class="flex-1 flex flex-col h-full bg-slate-950 min-w-0 border-r border-slate-800/60">
+<!-- Messages Container -->
+<div class="flex-1 overflow-y-auto px-4 md:px-8 py-6 space-y-4" id="messages-container">
+<!-- Friendly Security Notice -->
+<div class="flex justify-center mb-6">
+<div class="flex items-center gap-2 max-w-md px-3.5 py-2 bg-slate-900/90 border border-slate-800 rounded-xl text-center text-xs text-slate-400 shadow-sm">
+<span class="material-symbols-outlined text-sky-400 text-[16px]">shield</span>
+<span class="">Messages in this room are private and end-to-end encrypted.</span>
+</div>
+</div>
+<!-- Incoming Message 1: Cipher_7 -->
+<div class="flex justify-start"><div class="max-w-[85%] md:max-w-[540px] bg-slate-900/90 border border-slate-800/80 rounded-2xl rounded-tl-sm px-4 py-2.5 space-y-1 shadow-sm"><div class="flex items-center justify-between gap-3"><span class="text-xs font-semibold text-sky-400">Cipher_7</span></div><p class="text-sm text-slate-200 leading-relaxed select-text">Has anyone reviewed the updated zero-knowledge handshake? Ratchet states need to match epoch 12 prior to memory flush.</p><div class="flex items-center justify-end pt-0.5"><span class="text-[11px] text-slate-400">14:22</span></div></div></div>
+<!-- Incoming Message 2: Phantom_x -->
+<div class="flex justify-start"><div class="max-w-[85%] md:max-w-[540px] bg-slate-900/90 border border-slate-800/80 rounded-2xl rounded-tl-sm px-4 py-2.5 space-y-1 shadow-sm"><div class="flex items-center justify-between gap-3"><span class="text-xs font-semibold text-amber-400">Phantom_x</span></div><p class="text-sm text-slate-200 leading-relaxed select-text">The room key will self-expire in 20 minutes. Confirmed ephemeral socket verification passed on peer node 4.</p><div class="flex items-center justify-end pt-0.5"><span class="text-[11px] text-slate-400">14:23</span></div></div></div>
+<!-- Incoming Message 3: Cipher_7 -->
+<div class="flex justify-start"><div class="max-w-[85%] md:max-w-[540px] bg-slate-900/90 border border-slate-800/80 rounded-2xl rounded-tl-sm px-4 py-2.5 space-y-1 shadow-sm"><div class="flex items-center justify-between gap-3"><span class="text-xs font-semibold text-sky-400">Cipher_7</span></div><p class="text-sm text-slate-200 leading-relaxed select-text">All clear, the verification completed smoothly without any exceptions.</p><div class="flex items-center justify-end pt-0.5"><span class="text-[11px] text-slate-400">14:24</span></div></div></div>
+<!-- Outbound Message: You (Neo) -->
+<div class="flex justify-end"><div class="max-w-[85%] md:max-w-[540px] bg-sky-600 border border-sky-500/40 rounded-2xl rounded-tr-sm px-4 py-2.5 space-y-1 shadow-sm"><div class="flex items-center justify-between gap-3"><span class="text-xs font-semibold text-sky-100">You (Neo)</span></div><p class="text-sm text-white leading-relaxed select-text">Shared the documentation. All keys are stored client-side in session memory and will be scrubbed instantly on disconnect.</p><div class="flex items-center justify-end pt-0.5"><span class="text-[11px] text-sky-200">14:25</span></div></div></div>
+</div>
+<!-- Bottom Input Dock -->
+<div class="p-3 md:p-4 bg-slate-900 border-t border-slate-800 shrink-0">
+<form class="max-w-4xl mx-auto flex items-center gap-2.5" id="chat-form" onsubmit="handleSendMessage(event)">
+<input autocomplete="off" class="flex-1 bg-slate-950 border border-slate-700/70 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500/40 focus:border-sky-500 transition-colors" id="message-input" placeholder="Type a message..." type="text"/>
+<button class="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 active:bg-sky-600 text-white text-sm font-medium rounded-xl flex items-center gap-1.5 transition-colors shadow-sm shrink-0" type="submit"><span class="">Send</span><span class="material-symbols-outlined text-[16px]">send</span></button>
+</form>
+</div>
+</main>
+<!-- Sidebar: People in Room -->
+<aside class="w-72 lg:w-76 bg-slate-900 flex flex-col shrink-0 border-l border-slate-800 h-full absolute right-0 top-0 bottom-0 z-20 lg:relative translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out shadow-lg lg:shadow-none" id="room-drawer">
+<!-- Drawer Header -->
+<div class="h-16 px-4 border-b border-slate-800 flex items-center justify-between shrink-0">
+<div class="flex items-center gap-2">
+<span class="font-semibold text-sm text-slate-200">People in Room (3)</span>
+</div>
+<button class="lg:hidden text-slate-400 hover:text-slate-200 p-1" onclick="toggleSidebar()">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Drawer Content: Active Participants List -->
+<div class="flex-1 overflow-y-auto p-4 space-y-2"><div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/40"><div class="flex items-center gap-2.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.5)] shrink-0"></span><span class="text-sm font-medium text-slate-100">You (Neo)</span></div><span class="text-[11px] font-medium text-slate-400 bg-slate-700/50 px-2 py-0.5 rounded">You</span></div><div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/40 border border-transparent hover:border-slate-700/40 transition-colors"><div class="flex items-center gap-2.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 shrink-0"></span><span class="text-sm font-medium text-slate-200">Cipher_7</span></div></div><div class="flex items-center justify-between p-2.5 rounded-xl bg-slate-800/40 border border-transparent hover:border-slate-700/40 transition-colors"><div class="flex items-center gap-2.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400 shrink-0"></span><span class="text-sm font-medium text-slate-200">Phantom_x</span></div></div></div>
+</aside>
+</div>
+<script>
+    // Copy Code Action
+    function copyCode() {
+      const code = "#e9f8a...c32d";
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copy-btn');
+        btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span><span>Copied</span>`;
+        setTimeout(() => {
+          btn.innerHTML = `<span class="material-symbols-outlined text-[14px]">content_copy</span><span>Copy Code</span>`;
+        }, 1500);
+      });
+    }
+
+    // Toggle Sidebar Drawer for mobile
+    function toggleSidebar() {
+      const drawer = document.getElementById('room-drawer');
+      drawer.classList.toggle('translate-x-full');
+    }
+
+    // Leave Room Handler
+    function leaveRoom() {
+      if (confirm("Are you sure you want to leave this room?")) {
+        window.location.reload();
+      }
+    }
+
+    // Send Message Handler
+    function handleSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const container = document.getElementById('messages-container');
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+      const newMsg = document.createElement('div');
+      newMsg.className = 'flex justify-end';
+      newMsg.innerHTML = `
+        <div class="max-w-[85%] md:max-w-[540px] bg-sky-600 border border-sky-500/40 rounded-2xl rounded-tr-sm px-4 py-2.5 space-y-1 shadow-sm">
+          <div class="flex items-center justify-between gap-3">
+            <span class="text-xs font-semibold text-sky-100">You (Neo)</span>
+          </div>
+          <p class="text-sm text-white leading-relaxed select-text">
+            ${escapeHtml(text)}
+          </p>
+          <div class="flex items-center justify-end pt-0.5">
+            <span class="text-[11px] text-sky-200">${timeStr}</span>
+          </div>
+        </div>
+      `;
+      container.appendChild(newMsg);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function escapeHtml(string) {
+      return String(string).replace(/[&<>"'`=\/]/g, function (s) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#39;',
+          '/': '&#x2F;',
+          '`': '&#x60;',
+          '=': '&#x3D;'
+        }[s];
+      });
+    }
+  </script>
+</body></html>

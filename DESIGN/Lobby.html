@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Anon — Simple, private conversations</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          }
+        },
+      },
+    }
+  </script>
+<style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+    .material-symbols-outlined {
+      font-size: 18px;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased selection:bg-sky-500/20 selection:text-sky-200">
+<!-- Minimal Clean Header -->
+<header class="flex justify-between items-center w-full px-6 py-4 border-b border-slate-800/80 bg-slate-950/60 backdrop-blur-md sticky top-0 z-10">
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+<span class="material-symbols-outlined" style="font-size: 19px;">shield</span>
+</div>
+<div>
+<span class="font-semibold text-slate-100 tracking-tight text-base">Anon</span>
+<span class="text-xs text-slate-400 ml-2 hidden sm:inline">Simple, private conversations</span>
+</div>
+</div>
+<div class="flex items-center space-x-3 text-xs text-slate-400">
+<div class="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
+<span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+<span>End-to-end encrypted</span>
+</div>
+</div>
+</header>
+<!-- Main Viewport Canvas -->
+<main class="flex-1 flex flex-col items-center justify-center p-4 sm:p-6">
+<div class="w-full max-w-[440px]">
+<!-- Central Card -->
+<div class="bg-slate-900/90 border border-slate-800/80 rounded-2xl shadow-xl shadow-black/40 overflow-hidden backdrop-blur-sm">
+<!-- Header -->
+<div class="px-7 pt-7 pb-5 text-center">
+<h1 class="text-xl font-semibold text-white tracking-tight">Start a conversation</h1>
+<p class="text-sm text-slate-400 mt-1.5">Private by design. No registration required.</p>
+</div>
+<!-- Mode Toggle Segmented Control -->
+<div class="px-7 pb-2">
+<div class="p-1 bg-slate-950/70 rounded-xl border border-slate-800/80 grid grid-cols-2 gap-1 text-sm font-medium">
+<button class="py-2 px-3 rounded-lg text-center transition-all duration-150 bg-slate-800 text-white shadow-sm font-medium" id="tab-join" onclick="switchMode('join')" type="button">
+              Join Room
+            </button>
+<button class="py-2 px-3 rounded-lg text-center transition-all duration-150 text-slate-400 hover:text-slate-200" id="tab-create" onclick="switchMode('create')" type="button">
+              Create Room
+            </button>
+</div>
+</div>
+<!-- Form Area -->
+<form class="p-7 space-y-4" onsubmit="handleFormSubmit(event)">
+<!-- Name Field -->
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-slate-300 tracking-wide" for="display-name">
+              Your Name
+            </label>
+<input class="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all outline-none" id="display-name" placeholder="e.g. Alex" required="" type="text"/>
+</div>
+<!-- Join Room Fields -->
+<div class="space-y-4" id="join-view">
+<div class="space-y-1.5">
+<label class="block text-xs font-medium text-slate-300 tracking-wide" for="room-id">
+                Room Code or Link
+              </label>
+<input class="w-full px-3.5 py-2.5 bg-slate-950/70 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-500 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 transition-all outline-none" id="room-id" placeholder="Enter room code" type="text"/>
+</div>
+<div class="pt-2">
+<button class="w-full py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 font-medium rounded-xl text-sm transition-colors duration-150 flex items-center justify-center space-x-1.5 shadow-md shadow-sky-500/10" type="submit">
+<span>Join Room</span>
+</button>
+</div>
+</div>
+<!-- Create Room View -->
+<div class="space-y-4 hidden" id="create-view">
+<div class="p-3.5 rounded-xl bg-slate-950/50 border border-slate-800/80 text-xs text-slate-400 flex items-start space-x-2.5">
+<span class="material-symbols-outlined text-sky-400 mt-0.5" style="font-size: 16px;">info</span>
+<span class="leading-relaxed">A private room code will be generated and automatically copied to your clipboard.</span>
+</div>
+<div class="pt-2">
+<button class="w-full py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 font-medium rounded-xl text-sm transition-colors duration-150 flex items-center justify-center space-x-1.5 shadow-md shadow-sky-500/10" onclick="handleCreateRoom()" type="button">
+<span id="create-btn-text">Create Room</span>
+</button>
+</div>
+</div>
+</form>
+</div>
+<!-- Subtle Safe Note -->
+<div class="mt-4 text-center">
+<p class="text-xs text-slate-500">
+          Messages disappear automatically once all participants leave.
+        </p>
+</div>
+</div>
+</main>
+<script>
+    let currentMode = 'join';
+
+    function switchMode(mode) {
+      currentMode = mode;
+      const joinBtn = document.getElementById('tab-join');
+      const createBtn = document.getElementById('tab-create');
+      const joinView = document.getElementById('join-view');
+      const createView = document.getElementById('create-view');
+
+      if (mode === 'join') {
+        joinBtn.className = "py-2 px-3 rounded-lg text-center transition-all duration-150 bg-slate-800 text-white shadow-sm font-medium";
+        createBtn.className = "py-2 px-3 rounded-lg text-center transition-all duration-150 text-slate-400 hover:text-slate-200";
+        joinView.classList.remove('hidden');
+        createView.classList.add('hidden');
+      } else {
+        createBtn.className = "py-2 px-3 rounded-lg text-center transition-all duration-150 bg-slate-800 text-white shadow-sm font-medium";
+        joinBtn.className = "py-2 px-3 rounded-lg text-center transition-all duration-150 text-slate-400 hover:text-slate-200";
+        createView.classList.remove('hidden');
+        joinView.classList.add('hidden');
+      }
+    }
+
+    function generateRoomCode() {
+      const chars = 'abcdefghijkmnpqrstuvwxyz23456789';
+      let result = '';
+      for (let i = 0; i < 9; i++) {
+        if (i === 3 || i === 6) result += '-';
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      return result;
+    }
+
+    function handleCreateRoom() {
+      const nameInput = document.getElementById('display-name');
+      if (!nameInput.value.trim()) {
+        nameInput.focus();
+        return;
+      }
+      const code = generateRoomCode();
+      const btnText = document.getElementById('create-btn-text');
+      
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code);
+      }
+      
+      btnText.innerText = "Copied & Entering Room...";
+      setTimeout(() => {
+        btnText.innerText = "Entering Room...";
+      }, 700);
+    }
+
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const nameInput = document.getElementById('display-name');
+      if (!nameInput.value.trim()) {
+        nameInput.focus();
+        return;
+      }
+      if (currentMode === 'join') {
+        const joinBtn = e.target.querySelector('button[type="submit"]');
+        if (joinBtn) joinBtn.innerText = "Connecting...";
+      }
+    }
+  </script>
+</body></html>
